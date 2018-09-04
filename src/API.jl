@@ -569,6 +569,7 @@ end
 
 activate() = (Base.ACTIVE_PROJECT[] = nothing)
 function activate(path::String; shared::Bool=false)
+    path = expanduser(path)
     if !shared
         devpath = nothing
         env = Base.active_project() === nothing ? nothing : EnvCache()

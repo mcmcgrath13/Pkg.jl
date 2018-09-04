@@ -175,7 +175,7 @@ function PackageSpec(;name::AbstractString="", uuid::Union{String, UUID}=UUID(0)
     if url !== nothing || path !== nothing || rev !== nothing
         if path !== nothing || url !== nothing
             path !== nothing && url !== nothing && pkgerror("cannot specify both path and url")
-            url = url == nothing ? path : url
+            url = url == nothing ? expanduser(path) : url
         end
         repo = GitRepo(url=url, rev=rev)
     else
@@ -505,7 +505,7 @@ function relative_project_path(ctx::Context, path::String)
                    safe_realpath(dirname(ctx.env.project_file)))
 end
 
-casesensitive_isdir(dir::String) = isdir_windows_workaround(dir) && dir in readdir(joinpath(dir, ".."))
+casesensitive_isdir(dir::String) = isdir_windows_workaround(dir) && basename(dir) in readdir(joinpath(dir, ".."))
 
 function handle_repos_develop!(ctx::Context, pkgs::AbstractVector{PackageSpec}; shared::Bool)
     Base.shred!(LibGit2.CachedCredentials()) do creds
