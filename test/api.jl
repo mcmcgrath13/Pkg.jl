@@ -38,7 +38,20 @@ include("utils.jl")
             @test Base.active_project() == joinpath(path, "modules", "Foo", "Project.toml")
             Pkg.activate() # activate home project
             @test Base.ACTIVE_PROJECT[] === nothing
+            # expansion of ~
+            if !Sys.iswindows()
+                Pkg.activate("~/Foo")
+                @test Base.active_project() == joinpath(homedir(), "Foo", "Project.toml")
+            end
         end
+    end
+end
+
+@testset "PackageSpec" begin
+    # expansion of ~
+    if !Sys.iswindows()
+        pkg = PackageSpec(path = "~/Foo")
+        @test pkg.repo.url == joinpath(homedir(), "Foo")
     end
 end
 
